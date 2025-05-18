@@ -4,7 +4,7 @@ import argparse
 import sys
 from ast import Module
 from argparse import Namespace
-from typing import Optional, cast
+from typing import Callable, Optional, cast
 
 # CLASSES
 class _MessageCollection():
@@ -46,6 +46,12 @@ class DocStringManager():
 
     '''Collects all the logic related to docstrings management.'''
 
+    __logging_function : Callable[[str], None]
+
+    def __init__(self, logging_function : Callable[[str], None] = lambda msg : print(msg)) -> None:
+    
+        self.__logging_function = logging_function
+
     def load_source(self, file_path : str) -> str:
 
         '''Loads source from file_path.'''
@@ -74,15 +80,15 @@ class DocStringManager():
                                 method_names.append(method_name)
 
         return method_names
-    def print_docstrings(self, missing: list[str]) -> None:
+    def log_docstrings(self, missing: list[str]) -> None:
 
         '''Prints missing docstrings.'''
 
         if missing:
             for method in missing:
-                print(method)
+                self.__logging_function(method)
         else:
-            print(_MessageCollection.all_methods_have_docstrings())
+            self.__logging_function(_MessageCollection.all_methods_have_docstrings())
 class DocStringChecker():
 
     '''Collects all the logic related to docstrings checking.'''
@@ -109,7 +115,7 @@ class DocStringChecker():
 
         source : str = self.__docstring_manager.load_source(file_path = cast(str, file_path))
         missing : list[str] = self.__docstring_manager.get_missing_docstrings(source = source, exclude = exclude)
-        self.__docstring_manager.print_docstrings(missing = missing)
+        self.__docstring_manager.log_docstrings(missing = missing)
 
 # MAIN
 if __name__ == "__main__":
