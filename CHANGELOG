@@ -1,5 +1,5 @@
 v1.0.0
 - Library:
-	- Feature: ...
+	- Feature: accepts a file_path and returns a list of methods lacking of docstrings.
 - Documentation:
 	- Feature: covers all the features available in v1.0.0.

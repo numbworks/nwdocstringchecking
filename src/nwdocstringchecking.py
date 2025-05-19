@@ -43,13 +43,13 @@ class ArgumentParser():
         '''Parses file_path and exclude arguments.'''
 
         try:
-            parser = argparse.ArgumentParser(description = _MessageCollection.parser_description())
+            parser : argparse.ArgumentParser = argparse.ArgumentParser(description = _MessageCollection.parser_description())
             parser.add_argument("--file_path", "-fp", required = True, help = _MessageCollection.file_path_to_the_python_file())
             parser.add_argument("--exclude", "-e", required = False, action = "append", default = [], help = _MessageCollection.exclude_substrings())
 
-            args: Namespace = parser.parse_args()
+            args : Namespace = parser.parse_args()
 
-            return args.file_path, args.exclude
+            return (args.file_path, args.exclude)
         except:
             return None, []
 class DocStringManager():
@@ -105,14 +105,17 @@ class DocStringChecker():
 
     __argument_parser : ArgumentParser
     __docstring_manager : DocStringManager
+    __exit_function : Callable[[], None]
 
     def __init__(
         self, 
         argument_parser : ArgumentParser = ArgumentParser(), 
-        docstring_manager : DocStringManager = DocStringManager()) -> None:
+        docstring_manager : DocStringManager = DocStringManager(),
+        exit_function : Callable[[], None] = lambda : sys.exit()) -> None:
 
         self.__argument_parser = argument_parser
         self.__docstring_manager = docstring_manager
+        self.__exit_function = exit_function
 
     def run(self) -> None:
 
@@ -121,7 +124,7 @@ class DocStringChecker():
         file_path, exclude = self.__argument_parser.parse_arguments()
 
         if file_path is None:
-            sys.exit()
+            self.__exit_function()
 
         source : str = self.__docstring_manager.load_source(file_path = cast(str, file_path))
         missing : list[str] = self.__docstring_manager.get_missing_docstrings(source = source, exclude = exclude)
