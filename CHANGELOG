@@ -1,5 +1,5 @@
 v1.0.0
-- Library:
+- Application:
 	- Feature: accepts a file_path and returns a list of methods lacking docstrings.
 	- Feature: allows the user to exclude methods and classes - i.e. "__init__".
 - Documentation:

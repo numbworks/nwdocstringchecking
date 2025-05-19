@@ -9,7 +9,7 @@ Contact: numbworks@gmail.com
 
 ## Introduction
 
-`nwdocstringchecking` is an application designed to check which methods in a Python file lack docstrings.
+`nwdocstringchecking` is a CLI application designed to check which methods in a Python file lack docstrings.
 
 ## Getting Started
 
