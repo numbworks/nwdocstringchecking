@@ -1,4 +1,10 @@
-# IMPORTS
+'''
+An application designed to check which methods in a Python file lack of docstrings.
+
+Alias: nwdsc
+'''
+
+# GLOBAL MODULES
 import ast
 import argparse
 import sys
@@ -6,7 +12,9 @@ from ast import Module
 from argparse import Namespace
 from typing import Callable, Optional, cast
 
-# CLASSES
+# LOCAL MODULES
+# CONSTANTS
+# STATIC CLASSES
 class _MessageCollection():
 
     '''Collects all the messages used for logging and for the exceptions.'''
@@ -24,6 +32,8 @@ class _MessageCollection():
     @staticmethod
     def all_methods_have_docstrings() -> str:
         return "All methods have docstrings."
+
+# CLASSES
 class ArgumentParser():
 
     '''Collects all the logic related to parsing arguments.'''
