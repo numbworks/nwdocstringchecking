@@ -2,7 +2,8 @@
 import unittest
 from unittest.mock import Mock
 from argparse import ArgumentParser, Namespace
-from typing import Callable, Optional, Tuple
+from parameterized import parameterized
+from typing import Optional, Tuple
 
 # LOCAL MODULES
 import sys, os
@@ -14,17 +15,6 @@ from nwdocstringchecking import _MessageCollection, APFactory, APAdapter
 import unittest
 
 # SUPPORT METHODS
-class SupportMethodProvider():
-
-    '''Collection of generic purpose test-aiding methods.'''
-
-    @staticmethod
-    def get_args_tuple(
-            file_path : Optional[str] = "nwsomething.py", 
-            exclude : list[str] = ["_MessageCollection", "__init__"]
-        ) -> Tuple[Optional[str], list[str]]:
-        return (file_path, exclude)
-
 # TEST CLASSES
 class MessageCollectionTestCase(unittest.TestCase):
 
@@ -70,12 +60,17 @@ class MessageCollectionTestCase(unittest.TestCase):
         self.assertEqual(expected, actual)
 class APAdapterTestCase(unittest.TestCase):
 
-    def test_parseargs_shouldreturnexpectedtuple_wheninvoked(self) -> None:
+    @parameterized.expand([
+        ("nwsomething.py", ["_MessageCollection", "__init__"], ("nwsomething.py", ["_MessageCollection", "__init__"])),
+        (None, [], (None, []))
+    ])
+    def test_parseargs_shouldreturnexpectedtuple_wheninvoked(
+        self, 
+        file_path : Optional[str], 
+        exclude : list[str], 
+        expected : Tuple[Optional[str], list[str]]) -> None:
 
         # Arrange
-        file_path, exclude = SupportMethodProvider().get_args_tuple()
-        expected : Tuple[Optional[str], list[str]] = (file_path, exclude)
-
         argument_parser : ArgumentParser = ArgumentParser()
         argument_parser.add_argument("--file_path", "-fp", required = True)
         argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [])
