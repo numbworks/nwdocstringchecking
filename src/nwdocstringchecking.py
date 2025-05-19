@@ -1,5 +1,5 @@
 '''
-An application designed to check which methods in a Python file lack of docstrings.
+An application designed to check which methods in a Python file lack docstrings.
 
 Alias: nwdsc
 '''

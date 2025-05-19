@@ -86,13 +86,13 @@ class APAdapterTestCase(unittest.TestCase):
         expected : Tuple[Optional[str], list[str]]) -> None:
 
         # Arrange
-        argument_parser : ArgumentParser = ArgumentParser()
+        argument_parser : Mock = Mock(spec = ArgumentParser)
         argument_parser.add_argument("--file_path", "-fp", required = True)
         argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [])
-        argument_parser.parse_args = Mock(return_value = Namespace(file_path = file_path, exclude = exclude))
+        argument_parser.parse_args.return_value = Namespace(file_path = file_path, exclude = exclude)
 
         ap_factory : Mock = Mock()
-        ap_factory.create = Mock(return_value = argument_parser)
+        ap_factory.create.return_value = argument_parser
 
         # Act
         ap_adapter : APAdapter = APAdapter(ap_factory = ap_factory)
@@ -104,13 +104,13 @@ class APAdapterTestCase(unittest.TestCase):
     def test_parseargs_shouldreturnnoneandemptylist_whenargumentparserraisesexception(self) -> None:
 
         # Arrange
-        argument_parser : ArgumentParser = ArgumentParser()
+        argument_parser : Mock = Mock(spec = ArgumentParser)
         argument_parser.add_argument("--file_path", "-fp", required = True)
         argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [])
-        argument_parser.parse_args = Mock(side_effect = Exception("Some arsing error"))
+        argument_parser.parse_args.side_effect = Exception("Some arsing error")
 
         ap_factory : Mock = Mock()
-        ap_factory.create = Mock(return_value = argument_parser)
+        ap_factory.create.return_value = argument_parser
 
         ap_adapter : APAdapter = APAdapter(ap_factory = ap_factory)
 

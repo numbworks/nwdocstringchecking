@@ -9,7 +9,7 @@ Contact: numbworks@gmail.com
 
 ## Introduction
 
-`nwdocstringchecking` is an application designed to check which methods in a Python file lack of docstrings.
+`nwdocstringchecking` is an application designed to check which methods in a Python file lack docstrings.
 
 ## Getting Started
 
@@ -82,25 +82,6 @@ To calculate the total unit test coverage in Visual Studio Code (while still con
 
 4. Done!
 
-## Dependency Update
-
-To check for the updatability of the dependencies this library is built upon, you can use the `nwpackageversions` library. Please:
-
-1. Launch Visual Studio Code;
-2. Click on <ins>File</ins> > <ins>Open folder</ins> > `nwdocstringchecking`;
-3. <ins>Terminal</ins> > <ins>New Terminal</ins>;
-4. Run the following commands to perform the dependency check (it requires an internet connection):
-
-    ```
-    cd src
-    python3
-    from nwpackageversions import RequirementChecker
-    RequirementChecker().check("/workspaces/nwdocstringchecking/.devcontainer/Dockerfile")
-    ```
-
-5. You will get a log containing a list of up-to-date and out-of-date dependencies, that you can use to decide which update to perform.
-6. Done!
-
 ## The makefile
 
 This software package ships with a `makefile` that include all the pre-release verification actions:
@@ -124,13 +105,8 @@ The avalaible target names are:
 | coverage-verbose | Runs a unit test coverage calculation task and logs the % per class. |
 | tryinstall-verbose | Simulates a "pip install" and logs everything. |
 | compile-verbose | Runs "python -m py_compile" command against the module file. |
-| compilenotebook-verbose | Runs "python -m py_compile" command against the notebook file. |
 | unittest-verbose | Runs "python" command against the test files. |
 | codemetrics-verbose | Runs a cyclomatic complexity analysis against all the nw*.py files in /src. |
-| docstrings-verbose | Lists all the methods that lack of docstring. |
-| calculate-commitavg | Shows the daily average time between commits, grouped by year and month. |
-| check-pythonversion | Checks if the installed Python version is the expected one and logs a message. |
-| check-requirements | Checks if the required dependencies match with the most recent releases on PyPi. |
 | update-codecoverage | Updates the codecoverage.txt/.svg files according to the total unit test coverage. |
 | create-classdiagram | Creates a class diagram in Mermaid format that shows only relationships. |
 | all-concise | Runs a batch of verification tasks and logs one summary line for each of them. |
