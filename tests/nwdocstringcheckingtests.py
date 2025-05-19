@@ -232,3 +232,7 @@ class DocStringCheckerTestCase(unittest.TestCase):
         ds_manager.load_source.assert_called_once_with(file_path = file_path)
         ds_manager.get_missing_docstrings.assert_called_once_with(source = source, exclude = exclude)
         ds_manager.log_docstrings.assert_called_once_with(missing = missing)
+
+# MAIN
+if __name__ == "__main__":
+    result = unittest.main(argv=[''], verbosity=3, exit=False)
