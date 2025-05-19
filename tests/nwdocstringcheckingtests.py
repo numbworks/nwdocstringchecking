@@ -58,6 +58,25 @@ class MessageCollectionTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(expected, actual)
+class APFactoryTestCase(unittest.TestCase):
+
+    def test_create_shouldreturnexpectedargumentparser_wheninvoked(self) -> None:
+
+        # Arrange
+        # Act
+        argument_parser : ArgumentParser = APFactory().create()
+
+        # Assert
+        self.assertIsInstance(argument_parser, ArgumentParser)
+
+        arguments : list[str] = []
+        for action in argument_parser._actions:
+            arguments.extend(action.option_strings)
+
+        self.assertIn("--file_path", arguments)
+        self.assertIn("-fp", arguments)
+        self.assertIn("--exclude", arguments)
+        self.assertIn("-e", arguments)
 class APAdapterTestCase(unittest.TestCase):
 
     @parameterized.expand([
