@@ -6,10 +6,9 @@ Alias: nwdsc
 
 # GLOBAL MODULES
 import ast
-import argparse
 import sys
 from ast import Module
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from typing import Callable, Optional, cast
 
 # LOCAL MODULES
@@ -21,37 +20,47 @@ class _MessageCollection():
 
     @staticmethod
     def parser_description() -> str:
-        return "Check if all methods in a Python file have docstrings."
+        return "Checks if all methods in a Python file have docstrings."
     @staticmethod
     def file_path_to_the_python_file() -> str:
-        return "File path to the Python file to check."
+        return "The file path to the Python file to check docstrings for."
     @staticmethod
     def exclude_substrings() -> str:
-        return "List of substrings to exclude from the output."
+        return "One or multiple substrings to exclude from the output."
     
     @staticmethod
     def all_methods_have_docstrings() -> str:
         return "All methods have docstrings."
 
 # CLASSES
-class ArgumentParser():
+class APAdapter():
 
-    '''Collects all the logic related to parsing arguments.'''
+    '''Customizes argparse.ArgumentParser for this use case.'''
 
-    def parse_arguments(self) -> tuple[Optional[str], list[str]]:
+    __parser_factory : Callable[[], ArgumentParser]
 
-        '''Parses file_path and exclude arguments.'''
+    def __init__(
+            self,
+            parser_factory : Callable[[], ArgumentParser] = lambda : ArgumentParser(description = _MessageCollection.parser_description())
+        ) -> None:
+        self.__parser_factory = parser_factory
+
+    def parse_args(self) -> tuple[Optional[str], list[str]]:
+
+        '''Parses provided arguments.'''
 
         try:
-            parser : argparse.ArgumentParser = argparse.ArgumentParser(description = _MessageCollection.parser_description())
+
+            parser : ArgumentParser = self.__parser_factory()
             parser.add_argument("--file_path", "-fp", required = True, help = _MessageCollection.file_path_to_the_python_file())
             parser.add_argument("--exclude", "-e", required = False, action = "append", default = [], help = _MessageCollection.exclude_substrings())
 
             args : Namespace = parser.parse_args()
 
             return (args.file_path, args.exclude)
+
         except:
-            return None, []
+            return (None, [])
 class DocStringManager():
 
     '''Collects all the logic related to docstrings management.'''
@@ -103,17 +112,17 @@ class DocStringChecker():
 
     '''Collects all the logic related to docstrings checking.'''
 
-    __argument_parser : ArgumentParser
+    __ap_adapter : APAdapter
     __docstring_manager : DocStringManager
     __exit_function : Callable[[], None]
 
     def __init__(
         self, 
-        argument_parser : ArgumentParser = ArgumentParser(), 
+        ap_adapter : APAdapter = APAdapter(), 
         docstring_manager : DocStringManager = DocStringManager(),
         exit_function : Callable[[], None] = lambda : sys.exit()) -> None:
 
-        self.__argument_parser = argument_parser
+        self.__ap_adapter = ap_adapter
         self.__docstring_manager = docstring_manager
         self.__exit_function = exit_function
 
@@ -121,7 +130,7 @@ class DocStringChecker():
 
         '''Runs the docstring check.'''
 
-        file_path, exclude = self.__argument_parser.parse_arguments()
+        file_path, exclude = self.__ap_adapter.parse_args()
 
         if file_path is None:
             self.__exit_function()
