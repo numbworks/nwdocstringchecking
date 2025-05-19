@@ -189,7 +189,7 @@ class DocStringCheckerTestCase(unittest.TestCase):
         ap_adapter.parse_args.return_value = (None, [])
 
         ds_manager : DocStringManager = Mock()
-        exit_function : Callable[[], None] = Mock()
+        exit_function : Mock = Mock(spec = Callable[[], None])
 
         ds_checker : DocStringChecker = DocStringChecker(
             ap_adapter = ap_adapter,
