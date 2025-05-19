@@ -107,7 +107,7 @@ class APAdapterTestCase(unittest.TestCase):
         argument_parser : Mock = Mock(spec = ArgumentParser)
         argument_parser.add_argument("--file_path", "-fp", required = True)
         argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [])
-        argument_parser.parse_args.side_effect = Exception("Some arsing error")
+        argument_parser.parse_args.side_effect = Exception("Some parsing error")
 
         ap_factory : Mock = Mock()
         ap_factory.create.return_value = argument_parser
