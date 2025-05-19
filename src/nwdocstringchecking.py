@@ -9,7 +9,7 @@ import ast
 import sys
 from ast import Module
 from argparse import ArgumentParser, Namespace
-from typing import Callable, Optional, cast
+from typing import Callable, Optional, Tuple, cast
 
 # LOCAL MODULES
 # CONSTANTS
@@ -33,28 +33,35 @@ class _MessageCollection():
         return "All methods have docstrings."
 
 # CLASSES
+class APFactory():
+
+    '''Encapsulates all the logic related to the creation of a custom instance of argparse.ArgumentParser.'''
+
+    def create(self) -> ArgumentParser:
+
+        '''Creates a custom instance of argparse.ArgumentParser.'''
+
+        argument_parser : ArgumentParser = ArgumentParser(description = _MessageCollection.parser_description())
+        argument_parser.add_argument("--file_path", "-fp", required = True, help = _MessageCollection.file_path_to_the_python_file())
+        argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [], help = _MessageCollection.exclude_substrings())
+
+        return argument_parser
 class APAdapter():
 
     '''Customizes argparse.ArgumentParser for this use case.'''
 
-    __parser_factory : Callable[[], ArgumentParser]
+    __ap_factory : APFactory
 
-    def __init__(
-            self,
-            parser_factory : Callable[[], ArgumentParser] = lambda : ArgumentParser(description = _MessageCollection.parser_description())
-        ) -> None:
-        self.__parser_factory = parser_factory
+    def __init__(self, ap_factory : APFactory = APFactory()) -> None:
+        self.__ap_factory = ap_factory
 
-    def parse_args(self) -> tuple[Optional[str], list[str]]:
+    def parse_args(self) -> Tuple[Optional[str], list[str]]:
 
         '''Parses provided arguments.'''
 
         try:
 
-            parser : ArgumentParser = self.__parser_factory()
-            parser.add_argument("--file_path", "-fp", required = True, help = _MessageCollection.file_path_to_the_python_file())
-            parser.add_argument("--exclude", "-e", required = False, action = "append", default = [], help = _MessageCollection.exclude_substrings())
-
+            parser : ArgumentParser = self.__ap_factory.create()
             args : Namespace = parser.parse_args()
 
             return (args.file_path, args.exclude)

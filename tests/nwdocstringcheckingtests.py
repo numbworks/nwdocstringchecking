@@ -1,14 +1,30 @@
 # GLOBAL MODULES
+import unittest
+from unittest.mock import Mock
+from argparse import ArgumentParser, Namespace
+from typing import Callable, Optional, Tuple
+
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringchecking import _MessageCollection
+from nwdocstringchecking import _MessageCollection, APFactory, APAdapter
 
 # SUPPORT METHODS
 # TEST CLASSES
 import unittest
 
 # SUPPORT METHODS
+class SupportMethodProvider():
+
+    '''Collection of generic purpose test-aiding methods.'''
+
+    @staticmethod
+    def get_args_tuple(
+            file_path : Optional[str] = "nwsomething.py", 
+            exclude : list[str] = ["_MessageCollection", "__init__"]
+        ) -> Tuple[Optional[str], list[str]]:
+        return (file_path, exclude)
+
 # TEST CLASSES
 class MessageCollectionTestCase(unittest.TestCase):
 
@@ -49,6 +65,28 @@ class MessageCollectionTestCase(unittest.TestCase):
 
         # Act
         actual : str = _MessageCollection.all_methods_have_docstrings()
+
+        # Assert
+        self.assertEqual(expected, actual)
+class APAdapterTestCase(unittest.TestCase):
+
+    def test_parseargs_shouldreturnexpectedtuple_wheninvoked(self) -> None:
+
+        # Arrange
+        file_path, exclude = SupportMethodProvider().get_args_tuple()
+        expected : Tuple[Optional[str], list[str]] = (file_path, exclude)
+
+        argument_parser : ArgumentParser = ArgumentParser()
+        argument_parser.add_argument("--file_path", "-fp", required = True)
+        argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [])
+        argument_parser.parse_args = Mock(return_value = Namespace(file_path = file_path, exclude = exclude))
+
+        ap_factory : Mock = Mock()
+        ap_factory.create = Mock(return_value = argument_parser)
+
+        # Act
+        ap_adapter : APAdapter = APAdapter(ap_factory = ap_factory)
+        actual : Tuple[Optional[str], list[str]] = ap_adapter.parse_args()
 
         # Assert
         self.assertEqual(expected, actual)
