@@ -1,6 +1,6 @@
 # GLOBAL MODULES
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, mock_open, patch
 from argparse import ArgumentParser, Namespace
 from parameterized import parameterized
 from typing import Optional, Tuple
@@ -8,7 +8,7 @@ from typing import Optional, Tuple
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringchecking import _MessageCollection, APFactory, APAdapter
+from nwdocstringchecking import _MessageCollection, APFactory, APAdapter, DocStringManager
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -104,3 +104,64 @@ class APAdapterTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(expected, actual)
+class DocStringManagerTestCase(unittest.TestCase):
+
+    def test_loadsource_shouldreturnexpectedsourcecode_whenfileisread(self) -> None:
+
+        # Arrange
+        source : str = "class Example:\n    def method(self):\n        pass"
+        file_path : str = "dummy.py"
+
+        # Act
+        with patch("builtins.open", mock_open(read_data = source)) as mocked_file:
+            actual : str = DocStringManager().load_source(file_path = file_path)
+
+        # Assert
+        self.assertEqual(source, actual)
+        mocked_file.assert_called_once_with(file_path, "r", encoding = "utf-8")
+    def test_getmissingdocstrings_shouldreturnmethodswithoutdocstrings_whenmissingdocstrings(self) -> None:
+
+        # Arrange
+        source : str = "\n".join([
+            "class SomeClass:",
+            "    def documented(self):",
+            "        '''Docstring'''",
+            "        pass",
+            "",
+            "    def undocumented(self):",
+            "        pass"
+        ])
+        exclude : list[str] = []
+        expected : list[str] = ["SomeClass.undocumented"]
+
+        # Act
+        actual : list[str] = DocStringManager().get_missing_docstrings(source = source, exclude = exclude)
+
+        # Assert
+        self.assertEqual(expected, actual)
+    def test_logdocstrings_shouldlogexpectedmethodnames_whenmissingdocstrings(self) -> None:
+
+        # Arrange
+        logging_function : Mock = Mock()
+        missing : list[str] = ["SomeClass.method1", "SomeClass.method2"]
+        
+        # Act
+        ds_manager : DocStringManager = DocStringManager(logging_function = logging_function)
+        ds_manager.log_docstrings(missing = missing)
+
+        # Assert
+        for method in missing:
+            logging_function.assert_any_call(method)
+    def test_logdocstrings_shouldlogallmethodshavedocstrings_whennomissingdocstrings(self) -> None:
+
+        # Arrange
+        logging_function : Mock = Mock()
+        missing : list[str] = []
+        expected : str = _MessageCollection.all_methods_have_docstrings()
+        
+        # Act
+        ds_manager : DocStringManager = DocStringManager(logging_function = logging_function)
+        ds_manager.log_docstrings(missing = missing)
+
+        # Assert
+        logging_function.assert_called_once_with(expected)
