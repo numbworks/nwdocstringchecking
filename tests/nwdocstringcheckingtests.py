@@ -100,6 +100,25 @@ class APAdapterTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(expected, actual)
+
+    def test_parseargs_shouldreturnnoneandemptylist_whenargumentparserraisesexception(self) -> None:
+
+        # Arrange
+        argument_parser : ArgumentParser = ArgumentParser()
+        argument_parser.add_argument("--file_path", "-fp", required = True)
+        argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [])
+        argument_parser.parse_args = Mock(side_effect = Exception("Some arsing error"))
+
+        ap_factory : Mock = Mock()
+        ap_factory.create = Mock(return_value = argument_parser)
+
+        ap_adapter : APAdapter = APAdapter(ap_factory = ap_factory)
+
+        # Act
+        actual : Tuple[Optional[str], list[str]] = ap_adapter.parse_args()
+
+        # Assert
+        self.assertEqual((None, []), actual)
 class DocStringManagerTestCase(unittest.TestCase):
 
     def test_loadsource_shouldreturnexpectedsourcecode_whenfileisread(self) -> None:
