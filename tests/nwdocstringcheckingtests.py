@@ -12,10 +12,6 @@ from nwdocstringchecking import _MessageCollection, APFactory, APAdapter, DocStr
 
 # SUPPORT METHODS
 # TEST CLASSES
-import unittest
-
-# SUPPORT METHODS
-# TEST CLASSES
 class MessageCollectionTestCase(unittest.TestCase):
 
     def test_parserdescription_shouldreturnexpectedmessage_wheninvoked(self):
