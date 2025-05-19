@@ -123,10 +123,8 @@ COVERAGE_THRESHOLD: 70%
 [OK] coverage-concise: unit test coverage >= 70%.
 [OK] tryinstall-concise: installation process works.
 [OK] compile-concise: compiling the library throws no issues.
-[OK] compilenotebook-concise: compiling the notebook throws no issues.
-[OK] unittest-concise: '376' tests found and run.
+[OK] unittest-concise: '14' tests found and run.
 [OK] codemetrics-concise: the cyclomatic complexity is excellent ('A').
-[OK] docstrings-concise: all methods have docstrings.
 ```
 
 Considering the old-fashioned syntax adopted by both `make` and `bash`, here a summary of its less intuitive aspects:
@@ -139,6 +137,53 @@ Considering the old-fashioned syntax adopted by both `make` and `bash`, here a s
 | `$$` | Necessary to escape `$`. |
 | `$@` | Variable that stores the target name. |
 | `if [[ ... ]]` | Double square brackets to enable pattern matching. |
+
+## The CLI
+
+This application is designed to run as a CLI (command-line interface) from within a terminal.
+
+Invoking the script without arguments:
+
+```
+root@17b38eb6123b:/# python nwdocstringchecking.py
+```
+
+will return the help information:
+
+```
+usage: nwdocstringchecking.py [-h] --file_path FILE_PATH [--exclude EXCLUDE]
+nwdocstringchecking.py: error: the following arguments are required: --file_path/-fp
+```
+
+Invoking the script against a Python file with missing docstrings:
+
+```
+root@17b38eb6123b:/# python nwdocstringchecking.py --file_path nwdocstringchecking.py
+```
+
+will return a list of method names:
+
+```
+_MessageCollection.parser_description
+_MessageCollection.file_path_to_the_python_file
+_MessageCollection.exclude_substrings
+_MessageCollection.all_methods_have_docstrings
+DocStringManager.__init__
+DocStringChecker.__init__
+```
+
+Using the `exclude` argument(s):
+
+```
+root@17b38eb6123b:/# python nwdocstringchecking.py --file_path nwdocstringchecking.py --exclude _MessageCollection --exclude __init__
+```
+
+will filter the output accordingly and/or return the following message:
+
+```
+All methods have docstrings.
+```
+
 
 ## Markdown Toolset
 
