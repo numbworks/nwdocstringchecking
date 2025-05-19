@@ -120,17 +120,17 @@ class DocStringChecker():
     '''Collects all the logic related to docstrings checking.'''
 
     __ap_adapter : APAdapter
-    __docstring_manager : DocStringManager
+    __ds_manager : DocStringManager
     __exit_function : Callable[[], None]
 
     def __init__(
         self, 
         ap_adapter : APAdapter = APAdapter(), 
-        docstring_manager : DocStringManager = DocStringManager(),
+        ds_manager : DocStringManager = DocStringManager(),
         exit_function : Callable[[], None] = lambda : sys.exit()) -> None:
 
         self.__ap_adapter = ap_adapter
-        self.__docstring_manager = docstring_manager
+        self.__ds_manager = ds_manager
         self.__exit_function = exit_function
 
     def run(self) -> None:
@@ -142,9 +142,9 @@ class DocStringChecker():
         if file_path is None:
             self.__exit_function()
 
-        source : str = self.__docstring_manager.load_source(file_path = cast(str, file_path))
-        missing : list[str] = self.__docstring_manager.get_missing_docstrings(source = source, exclude = exclude)
-        self.__docstring_manager.log_docstrings(missing = missing)
+        source : str = self.__ds_manager.load_source(file_path = cast(str, file_path))
+        missing : list[str] = self.__ds_manager.get_missing_docstrings(source = source, exclude = exclude)
+        self.__ds_manager.log_docstrings(missing = missing)
 
 # MAIN
 if __name__ == "__main__":

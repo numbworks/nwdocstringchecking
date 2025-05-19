@@ -3,12 +3,12 @@ import unittest
 from unittest.mock import Mock, mock_open, patch
 from argparse import ArgumentParser, Namespace
 from parameterized import parameterized
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringchecking import _MessageCollection, APFactory, APAdapter, DocStringManager
+from nwdocstringchecking import _MessageCollection, APFactory, APAdapter, DocStringManager, DocStringChecker
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -165,3 +165,55 @@ class DocStringManagerTestCase(unittest.TestCase):
 
         # Assert
         logging_function.assert_called_once_with(expected)
+class DocStringCheckerTestCase(unittest.TestCase):
+
+    def test_run_shouldcallexitfunction_whenfilepathisnone(self) -> None:
+
+        # Arrange
+        ap_adapter : APAdapter = Mock()
+        ap_adapter.parse_args.return_value = (None, [])
+
+        ds_manager : DocStringManager = Mock()
+        exit_function : Callable[[], None] = Mock()
+
+        ds_checker : DocStringChecker = DocStringChecker(
+            ap_adapter = ap_adapter,
+            ds_manager = ds_manager,
+            exit_function = exit_function
+        )
+
+        # Act
+        ds_checker.run()
+
+        # Assert
+        exit_function.assert_called_once()
+    def test_run_shouldcalldependencymethods_wheninvoked(self) -> None:
+
+        # Arrange
+        file_path : str = "nwsomething.py"
+        exclude : list[str] = ["__init__"]
+        source : str = "Some source code"
+        missing : list[str] = ["SomeClass.undocumented"]
+
+        ap_adapter : APAdapter = Mock()
+        ap_adapter.parse_args.return_value = (file_path, exclude)
+
+        ds_manager : DocStringManager = Mock()
+        ds_manager.load_source.return_value = source
+        ds_manager.get_missing_docstrings.return_value = missing
+
+        exit_function : Callable[[], None] = Mock()
+
+        ds_checker : DocStringChecker = DocStringChecker(
+            ap_adapter = ap_adapter,
+            ds_manager = ds_manager,
+            exit_function = exit_function
+        )
+
+        # Act
+        ds_checker.run()
+
+        # Assert
+        ds_manager.load_source.assert_called_once_with(file_path = file_path)
+        ds_manager.get_missing_docstrings.assert_called_once_with(source = source, exclude = exclude)
+        ds_manager.log_docstrings.assert_called_once_with(missing = missing)
