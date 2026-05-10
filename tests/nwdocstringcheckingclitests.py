@@ -2,12 +2,13 @@
 from io import StringIO
 from typing import Any
 import unittest
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from unittest.mock import MagicMock, mock_open, patch
 
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
+from nwdocstringchecking import DocStringChecker
 from nwdocstringcheckingcli import CLISTRING, _MessageCollection, APFactory, AsciiBannerManager, CLIManager
 
 # SUPPORT METHODS
@@ -151,6 +152,42 @@ class CLIManagerTestCase(unittest.TestCase):
 
         for call in calls:
             self.assertNotIsInstance(call.args[0], SystemExit)
+    
+    def test_runandlog_shouldcallexpectedmethods_wheninvoked(self) -> None:
+
+        # Arrange
+        file_path : str = "example.py"
+        args : Namespace = Namespace(file_path = file_path)
+        missing : list[str] = ["SomeClass.method"]
+
+        argument_parser : MagicMock = MagicMock(spec = ArgumentParser)
+        argument_parser.parse_args.return_value = args
+
+        ap_factory : MagicMock = MagicMock(spec = APFactory)
+        ap_factory.create.return_value = argument_parser
+
+        docstring_checker : MagicMock = MagicMock(spec = DocStringChecker)
+        docstring_checker.run.return_value = missing
+
+        cli_manager : CLIManager = CLIManager(
+            ap_factory = ap_factory,
+            docstring_checker = docstring_checker
+        )
+
+        # Act
+        with patch.object(cli_manager, "_CLIManager__log_ascii_banner") as log_ascii_banner, \
+             patch.object(cli_manager, "_CLIManager__log_namespace") as log_namespace, \
+             patch.object(cli_manager, "_CLIManager__log_docstrings") as log_docstrings:
+
+            cli_manager.run_and_log()
+
+            # Assert
+            log_ascii_banner.assert_called_once()
+            ap_factory.create.assert_called_once()
+            argument_parser.parse_args.assert_called_once()
+            log_namespace.assert_called_once_with(args)
+            docstring_checker.run.assert_called_once_with(file_path = file_path)
+            log_docstrings.assert_called_once_with(missing)
 
 # MAIN
 if __name__ == "__main__":
