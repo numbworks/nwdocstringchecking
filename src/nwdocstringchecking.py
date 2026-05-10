@@ -24,7 +24,7 @@ class _MessageCollection(
         _MessageCollectionValidator):
 
     '''Collects all the messages used for logging and for the exceptions.'''
-class _Validator():
+class Validator():
 
     '''Collects all validation methods.'''
 
@@ -74,7 +74,7 @@ class DocStringChecker():
 
         '''Runs the docstring check.'''
 
-        _Validator.validate_file_path(file_path)
+        Validator.validate_file_path(file_path)
 
         source : str = self.__load_source(file_path = cast(str, file_path))
         missing : list[str] = self.__get_missing_docstrings(source = source, exclude = exclude)

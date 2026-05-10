@@ -1,11 +1,12 @@
 # GLOBAL MODULES
 import unittest
+from argparse import ArgumentParser
 from unittest.mock import mock_open, patch
 
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringcheckingcli import _MessageCollection, AsciiBannerManager
+from nwdocstringcheckingcli import _MessageCollection, APFactory, AsciiBannerManager
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -79,6 +80,23 @@ class AsciiBannerManagerTestCase(unittest.TestCase):
             self.assertIn("top_border", actual)
             self.assertIn("ascii_art", actual)
             self.assertIn("bottom_border", actual)
+class APFactoryTestCase(unittest.TestCase):
+
+    def test_create_shouldreturnexpectedargumentparser_wheninvoked(self) -> None:
+
+        # Arrange
+        # Act
+        argument_parser : ArgumentParser = APFactory().create()
+
+        # Assert
+        self.assertIsInstance(argument_parser, ArgumentParser)
+
+        arguments : list[str] = []
+        for action in argument_parser._actions:
+            arguments.extend(action.option_strings)
+
+        self.assertIn("--file_path", arguments)
+        self.assertIn("--exclude", arguments)
 
 # MAIN
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from unittest.mock import mock_open, patch
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringchecking import _MessageCollection, _Validator, DocStringChecker
+from nwdocstringchecking import _MessageCollection, Validator, DocStringChecker
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -20,7 +20,7 @@ class ValidatorTestCase(unittest.TestCase):
         # Act, Assert
         with patch("os.path.isfile", return_value = False):
             with self.assertRaises(Exception) as context:
-                _Validator.validate_file_path(file_path = file_path)
+                Validator.validate_file_path(file_path = file_path)
             
             self.assertEqual(str(context.exception), expected)
     def test_validatefilepath_shoulddonothing_whenfileexists(self):
@@ -30,7 +30,7 @@ class ValidatorTestCase(unittest.TestCase):
 
         # Act, Assert
         with patch("os.path.isfile", return_value = True):
-            _Validator.validate_file_path(file_path = file_path)
+            Validator.validate_file_path(file_path = file_path)
 class DocStringCheckerTestCase(unittest.TestCase):
 
     def test_loadsource_shouldreturnexpectedsourcecode_whenfileisread(self) -> None:

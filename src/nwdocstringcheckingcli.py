@@ -3,15 +3,35 @@ A CLI application built on the top of nwdocstringchecking.
 '''
 
 # GLOBAL MODULES
-import ast
 import os
-import sys
-from ast import Module
 from argparse import ArgumentParser, Namespace
-from typing import Callable, Optional, Tuple, cast
+from typing import Any, Callable, Final, Optional, Tuple, cast
 
 # LOCAL MODULES
+from nwdocstringchecking import Validator
+from setupinfo import CLI_NAME, CLI_DESCRIPTION, PROJECT_VERSION
+
 # CONSTANTS
+class CLISTRING:
+
+    '''Collects all the CLI-related strings.'''
+
+    COMMAND_DEST : Final[str] = "command"
+    COMMAND_REQUIRED : Final[bool] = True
+    COMMAND_ARGS : dict[str, Any] = { "dest": COMMAND_DEST, "required": COMMAND_REQUIRED }
+
+    OPTION_FILEPATH_FLAGS : Final[list[str]] = ["--file_path"]
+    OPTION_FILEPATH_DEST : Final[str] = "file_path"
+    OPTION_FILEPATH_REQUIRED : Final[bool] = True
+    OPTION_FILEPATH_HELP : Final[str] = "The path to the Python file to check docstrings for."
+
+    OPTION_EXCLUDE_FLAGS : Final[list[str]] = ["--exclude"]
+    OPTION_EXCLUDE_DEST : Final[str] = "exclude"
+    OPTION_EXCLUDE_REQUIRED : Final[bool] = False
+    OPTION_EXCLUDE_HELP : Final[str] = "One or multiple substrings to exclude from the output."
+    OPTION_EXCLUDE_DEFAULT : Final[list[str]] = []
+    OPTION_EXCLUDE_ACTION : Final[str] = "append"
+
 # STATIC CLASSES
 class _MessageCollectionAsciiBannerManager():
 
@@ -20,21 +40,7 @@ class _MessageCollectionAsciiBannerManager():
     @staticmethod
     def provided_version_empty_whitespace() -> str:
         return "The provided 'version' is empty or whitespace."
-class _MessageCollectionAPFactory():
-
-    '''Collects all the messages used for logging and for the exceptions used by APFactory.'''
-
-    @staticmethod
-    def parser_description() -> str:
-        return "Checks if all methods in a Python file have docstrings."
-    @staticmethod
-    def file_path_to_the_python_file() -> str:
-        return "The file path to the Python file to check docstrings for."
-    @staticmethod
-    def exclude_substrings() -> str:
-        return "One or multiple substrings to exclude from the output."
 class _MessageCollection(
-        _MessageCollectionAPFactory,
         _MessageCollectionAsciiBannerManager):
 
     '''Collects all the messages used for logging and for the exceptions.'''
@@ -42,9 +48,7 @@ class _MessageCollection(
 # CLASSES
 class AsciiBannerManager:
 
-    """
-        Creates the ASCII banner for the provided library's version.
-    """
+    """Creates the ASCII banner for the provided library's version."""
 
     def __validate(self, version: str) -> None:
         
@@ -107,9 +111,22 @@ class APFactory():
 
         '''Creates a custom instance of argparse.ArgumentParser.'''
 
-        argument_parser : ArgumentParser = ArgumentParser(description = _MessageCollection.parser_description())
-        argument_parser.add_argument("--file_path", "-fp", required = True, help = _MessageCollection.file_path_to_the_python_file())
-        argument_parser.add_argument("--exclude", "-e", required = False, action = "append", default = [], help = _MessageCollection.exclude_substrings())
+        argument_parser : ArgumentParser = ArgumentParser(prog = CLI_NAME, description = CLI_DESCRIPTION)
+
+        argument_parser.add_argument(
+            *CLISTRING.OPTION_FILEPATH_FLAGS,
+            dest = CLISTRING.OPTION_FILEPATH_DEST,
+            required = CLISTRING.OPTION_FILEPATH_REQUIRED,
+            help = CLISTRING.OPTION_FILEPATH_HELP,
+            type = Validator().validate_file_path)
+        
+        argument_parser.add_argument(
+            *CLISTRING.OPTION_EXCLUDE_FLAGS,
+            dest = CLISTRING.OPTION_EXCLUDE_DEST,
+            required = CLISTRING.OPTION_EXCLUDE_REQUIRED,
+            help = CLISTRING.OPTION_EXCLUDE_HELP,
+            default = CLISTRING.OPTION_EXCLUDE_DEFAULT,
+            action = CLISTRING.OPTION_EXCLUDE_ACTION)
 
         return argument_parser
 class APAdapter():
