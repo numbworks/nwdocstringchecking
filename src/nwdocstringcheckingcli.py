@@ -9,7 +9,7 @@ from typing import Any, Callable, Final
 
 # LOCAL MODULES
 from nwdocstringchecking import DocStringChecker, Validator
-from setupinfo import CLI_NAME, CLI_DESCRIPTION, PROJECT_VERSION
+from setupinfo import CLI_DESCRIPTION, PROJECT_VERSION
 
 # CONSTANTS
 class CLISTRING:
@@ -117,9 +117,15 @@ class APFactory():
 
     def create(self) -> ArgumentParser:
 
-        '''Creates a custom instance of argparse.ArgumentParser.'''
+        '''
+            Creates a custom instance of argparse.ArgumentParser.
 
-        argument_parser : ArgumentParser = ArgumentParser(prog = CLI_NAME, description = CLI_DESCRIPTION)
+            The "prog" argument is not provided in order to make the "usage" statement  dynamic:
+
+                usage: nwdocstringcheckingcli.py [-h] --file_path FILE_PATH [--exclude EXCLUDE]
+        '''
+
+        argument_parser : ArgumentParser = ArgumentParser(description = CLI_DESCRIPTION)
 
         argument_parser.add_argument(
             *CLISTRING.OPTION_FILEPATH_FLAGS,
