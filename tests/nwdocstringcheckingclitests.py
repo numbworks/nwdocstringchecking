@@ -1,12 +1,14 @@
 # GLOBAL MODULES
-from io import StringIO
-from typing import Any
+import os
+import sys
 import unittest
 from argparse import ArgumentParser, Namespace
-from unittest.mock import MagicMock, mock_open, patch
+from io import StringIO
+from parameterized import parameterized
+from typing import Any
+from unittest.mock import MagicMock, patch
 
 # LOCAL MODULES
-import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
 from nwdocstringchecking import DocStringChecker
 from nwdocstringcheckingcli import CLISTRING, _MessageCollection, APFactory, AsciiBannerManager, CLIManager
@@ -153,12 +155,15 @@ class CLIManagerTestCase(unittest.TestCase):
         for call in calls:
             self.assertNotIsInstance(call.args[0], SystemExit)
     
-    def test_runandlog_shouldcallexpectedmethods_wheninvoked(self) -> None:
+    @parameterized.expand([
+        ("example.py", []),
+        ("example.py", ["get"])
+    ])
+    def test_runandlog_shouldcallexpectedmethods_wheninvoked(self, file_path : str, exclude : list[str]) -> None:
 
         # Arrange
-        file_path : str = "example.py"
-        args : Namespace = Namespace(file_path = file_path)
-        missing : list[str] = ["SomeClass.method"]
+        args : Namespace = Namespace(file_path = file_path, exclude = exclude)
+        missing : list[str] = ["SomeClass.get_data"]
 
         argument_parser : MagicMock = MagicMock(spec = ArgumentParser)
         argument_parser.parse_args.return_value = args
