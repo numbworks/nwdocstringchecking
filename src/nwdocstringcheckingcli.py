@@ -188,7 +188,7 @@ class CLIManager():
         self.__logging_function("")
     def __log_docstrings(self, missing: list[str]) -> None:
 
-        '''Prints missing docstrings.'''
+        '''Logs missing docstrings.'''
 
         if missing:
             for method in missing:
