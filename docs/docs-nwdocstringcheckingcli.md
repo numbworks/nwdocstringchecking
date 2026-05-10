@@ -12,49 +12,66 @@ Contact: numbworks@gmail.com
 
 `nwdocstringcheckingcli` is a command-line application built on the top of `nwdocstringchecking`.
 
-## Overview
+## CLI Reference
 
-This application is designed to run as a CLI (command-line interface) from within a terminal.
+|*Command*|*Sub Command*|Options|Exit Codes|
+|---|---|---|---|
+|||*--help, -h*|Success|
 
-Invoking the script without arguments:
+|Option|Value|Default|
+|---|---|---|
+|--file_paths|`<file path>`|-|
+|*--exclude*|`<string>`|-|
 
-```
-root@17b38eb6123b:/# python nwdocstringchecking.py
-```
+## Examples
 
-will return the help information:
+Run it against a `file_path`:
 
-```
-usage: nwdocstringchecking.py [-h] --file_path FILE_PATH [--exclude EXCLUDE]
-nwdocstringchecking.py: error: the following arguments are required: --file_path/-fp
-```
-
-Invoking the script against a Python file with missing docstrings:
-
-```
-root@17b38eb6123b:/# python nwdocstringchecking.py --file_path nwdocstringchecking.py
+```sh
+root@e584fefc57f0:/# alias nwds="python src/nwdocstringcheckingcli.py"
+root@e584fefc57f0:/# nwds --file_path src/nwdocstringchecking.py
 ```
 
-will return a list of method names:
+```
+*******************************************
+'##::: ##:'##:::::'##:'########:::'######::
+ ###:: ##: ##:'##: ##: ##.... ##:'##... ##:
+ ####: ##: ##: ##: ##: ##:::: ##: ##:::..::
+ ## ## ##: ##: ##: ##: ##:::: ##:. ######::
+ ##. ####: ##: ##: ##: ##:::: ##::..... ##:
+ ##:. ###: ##: ##: ##: ##:::: ##:'##::: ##:
+ ##::. ##:. ###. ###:: ########::. ######::
+..::::..:::...::...:::........::::......:::
+************************Version: 2.0.0*****
+
+file_path: 'src/nwdocstringchecking.py'
+exclude: '[]'
+
+_MessageCollectionValidator.provided_file_path_doesnt_exis
+```
+
+Run it against a `file_path` with `exclude`:
+
+```sh
+alias nwds="python src/nwdocstringcheckingcli.py"
+nwds --file_path src/nwdocstringchecking.py --exclude Message --exclude Something
+```
 
 ```
-_MessageCollection.parser_description
-_MessageCollection.file_path_to_the_python_file
-_MessageCollection.exclude_substrings
-_MessageCollection.all_methods_have_docstrings
-DocStringManager.__init__
-DocStringChecker.__init__
-```
+*******************************************
+'##::: ##:'##:::::'##:'########:::'######::
+ ###:: ##: ##:'##: ##: ##.... ##:'##... ##:
+ ####: ##: ##: ##: ##: ##:::: ##: ##:::..::
+ ## ## ##: ##: ##: ##: ##:::: ##:. ######::
+ ##. ####: ##: ##: ##: ##:::: ##::..... ##:
+ ##:. ###: ##: ##: ##: ##:::: ##:'##::: ##:
+ ##::. ##:. ###. ###:: ########::. ######::
+..::::..:::...::...:::........::::......:::
+************************Version: 2.0.0*****
 
-Using the `exclude` argument(s):
+file_path: 'src/nwdocstringchecking.py'
+exclude: '['Message', 'Something']'
 
-```
-root@17b38eb6123b:/# python nwdocstringchecking.py --file_path nwdocstringchecking.py --exclude _MessageCollection --exclude __init__
-```
-
-will filter the output accordingly and/or return the following message:
-
-```
 All methods have docstrings.
 ```
 
