@@ -1,13 +1,14 @@
 # GLOBAL MODULES
 from io import StringIO
+from typing import Any
 import unittest
 from argparse import ArgumentParser
-from unittest.mock import mock_open, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringcheckingcli import CLISTRING, _MessageCollection, APFactory, AsciiBannerManager
+from nwdocstringcheckingcli import CLISTRING, _MessageCollection, APFactory, AsciiBannerManager, CLIManager
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -108,7 +109,49 @@ class APFactoryTestCase(unittest.TestCase):
         with patch("sys.stderr", new_callable = StringIO):
             with self.assertRaises(SystemExit):
                 argument_parser.parse_args(args_list)
-                
+class CLIManagerTestCase(unittest.TestCase):                
+
+    def test_runandlog_shouldlogexceptionmessage_whenexceptionisraised(self):
+
+        # Arrange
+        expected : str = "Unexpected Error"
+        ap_factory : MagicMock = MagicMock(spec = APFactory)
+        ap_factory.create.side_effect = Exception(expected)
+        
+        logging_function : MagicMock = MagicMock()
+        
+        cli_manager : CLIManager = CLIManager(
+            ap_factory = ap_factory,
+            logging_function = logging_function
+        )
+
+        # Act
+        cli_manager.run_and_log()
+
+        # Assert
+        logging_function.assert_any_call(expected)
+    def test_runandlog_shoulddonothing_whensystemexitoccurs(self):
+
+        # Arrange
+        ap_factory : MagicMock = MagicMock(spec = APFactory)
+        ap_factory.create.side_effect = SystemExit()
+        
+        logging_function : MagicMock = MagicMock()
+        
+        cli_manager : CLIManager = CLIManager(
+            ap_factory = ap_factory,
+            logging_function = logging_function
+        )
+
+        # Act
+        cli_manager.run_and_log()
+
+        # Assert
+        calls : list[Any] = logging_function.call_args_list
+
+        for call in calls:
+            self.assertNotIsInstance(call.args[0], SystemExit)
+
 # MAIN
 if __name__ == "__main__":
     result = unittest.main(argv=[''], verbosity=3, exit=False)
