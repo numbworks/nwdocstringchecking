@@ -50,14 +50,14 @@ class DocStringCheckerTestCase(unittest.TestCase):
         # Arrange
         source : str = "\n".join([
             "class SomeClass:",
-            "    def documented(self):",
+            "    def append(self):",
             "        pass",
             "",
-            "    def undocumented(self):",
+            "    def remove(self):",
             "        pass"
         ])
-        exclude : list[str] = ["un"]
-        expected : list[str] = ["SomeClass.documented"]
+        exclude : list[str] = ["remove"]
+        expected : list[str] = ["SomeClass.append"]
 
         # Act
         actual : list[str] = DocStringChecker()._DocStringChecker__get_missing_docstrings(source = source, exclude = exclude) # type: ignore
@@ -78,24 +78,23 @@ class DocStringCheckerTestCase(unittest.TestCase):
                 DocStringChecker().run(file_path = file_path)
             
             self.assertIn("The provided 'file_path' doesn't exist", str(context.exception))
-
-    def test_run_should_return_missing_docstrings_when_file_exists(self) -> None:
+    def test_run_shouldreturnmissingdocstrings_whenfileexists(self) -> None:
 
         # Arrange
         file_path : str = "exists.py"
         source : str = (
-            "class A:\n"
-            "    def b(self):\n"
+            "class SomeClass:\n"
+            "    def undocumented(self):\n"
             "        pass"
         )
-        expected : list[str] = ["A.b"]
-        checker : DocStringChecker = DocStringChecker()
+        expected : list[str] = ["SomeClass.undocumented"]
 
         # Act
-        with patch("os.path.isfile") as mock_isfile:
-            mock_isfile.return_value = True
+        with patch("os.path.isfile") as isfile:
+            isfile.return_value = True
+
             with patch("builtins.open", mock_open(read_data = source)):
-                actual : list[str] = checker.run(file_path = file_path)
+                actual : list[str] = DocStringChecker().run(file_path = file_path)
 
         # Assert
         self.assertEqual(expected, actual)
