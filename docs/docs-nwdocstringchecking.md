@@ -6,10 +6,11 @@ Contact: numbworks@gmail.com
 | Date | Author | Description |
 |---|---|---|
 | 2025-05-18 | numbworks | Created. |
+| 2026-05-10 | numbworks | Last updated. |
 
 ## Introduction
 
-`nwdocstringchecking` is a CLI application designed to check which methods in a Python file lack docstrings.
+`nwdocstringchecking` is a library designed to identify which methods in a Python file are missing docstrings.
 
 ## Getting Started
 
@@ -82,108 +83,11 @@ To calculate the total unit test coverage in Visual Studio Code (while still con
 
 4. Done!
 
-## The makefile
+## See Also: `nwmakefiles`
 
-This software package ships with a `makefile` that include all the pre-release verification actions:
+This project includes portions of the `nwmakefiles` project, which is documented here:
 
-1. Launch Visual Studio Code;
-2. Click on <ins>File</ins> > <ins>Open folder</ins> > `nwdocstringchecking`;
-3. <ins>Terminal</ins> > <ins>New Terminal</ins>;
-4. Run the following commands:
-
-    ```
-    cd /workspaces/nwdocstringchecking/scripts
-    make -f makefile <target_name>
-    ```
-5. Done!
-
-The avalaible target names are:
-
-| Target Name | Description |
-|---|---|
-| type-verbose | Runs a type verification task and logs everything. |
-| coverage-verbose | Runs a unit test coverage calculation task and logs the % per class. |
-| tryinstall-verbose | Simulates a "pip install" and logs everything. |
-| compile-verbose | Runs "python -m py_compile" command against the module file. |
-| unittest-verbose | Runs "python" command against the test files. |
-| codemetrics-verbose | Runs a cyclomatic complexity analysis against all the nw*.py files in /src. |
-| update-codecoverage | Updates the codecoverage.txt/.svg files according to the total unit test coverage. |
-| create-classdiagram | Creates a class diagram in Mermaid format that shows only relationships. |
-| all-concise | Runs a batch of verification tasks and logs one summary line for each of them. |
-
-The expected outcome for `all-concise` is:
-
-```
-MODULE_NAME: nwdocstringchecking
-MODULE_VERSION: 1.0.0
-COVERAGE_THRESHOLD: 70%
-[OK] type-concise: passed!
-[OK] changelog-concise: 'CHANGELOG' updated to current version!
-[OK] setup-concise: 'setup.py' updated to current version!
-[OK] coverage-concise: unit test coverage >= 70%.
-[OK] tryinstall-concise: installation process works.
-[OK] compile-concise: compiling the library throws no issues.
-[OK] unittest-concise: '14' tests found and run.
-[OK] codemetrics-concise: the cyclomatic complexity is excellent ('A').
-```
-
-Considering the old-fashioned syntax adopted by both `make` and `bash`, here a summary of its less intuitive aspects:
-
-| Aspect | Description |
-|---|---|
-| `.PHONY` | All the targets that need to be called from another target need to be listed here. |
-| `SHELL := /bin/bash` | By default, `make` uses `sh`, which doesn't support some functions such as string comparison. |
-| `@` | By default, `make` logs all the commands included in the target. The `@` disables this behaviour. |
-| `$$` | Necessary to escape `$`. |
-| `$@` | Variable that stores the target name. |
-| `if [[ ... ]]` | Double square brackets to enable pattern matching. |
-
-## The CLI
-
-This application is designed to run as a CLI (command-line interface) from within a terminal.
-
-Invoking the script without arguments:
-
-```
-root@17b38eb6123b:/# python nwdocstringchecking.py
-```
-
-will return the help information:
-
-```
-usage: nwdocstringchecking.py [-h] --file_path FILE_PATH [--exclude EXCLUDE]
-nwdocstringchecking.py: error: the following arguments are required: --file_path/-fp
-```
-
-Invoking the script against a Python file with missing docstrings:
-
-```
-root@17b38eb6123b:/# python nwdocstringchecking.py --file_path nwdocstringchecking.py
-```
-
-will return a list of method names:
-
-```
-_MessageCollection.parser_description
-_MessageCollection.file_path_to_the_python_file
-_MessageCollection.exclude_substrings
-_MessageCollection.all_methods_have_docstrings
-DocStringManager.__init__
-DocStringChecker.__init__
-```
-
-Using the `exclude` argument(s):
-
-```
-root@17b38eb6123b:/# python nwdocstringchecking.py --file_path nwdocstringchecking.py --exclude _MessageCollection --exclude __init__
-```
-
-will filter the output accordingly and/or return the following message:
-
-```
-All methods have docstrings.
-```
-
+- [docs-nwmakefiles.md](SeeAlso-nwmakefiles/docs-nwmakefiles.md)
 
 ## Markdown Toolset
 
