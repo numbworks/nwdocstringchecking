@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 # LOCAL MODULES
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
 from nwdocstringchecking import DocStringChecker
-from nwdocstringcheckingcli import CLISTRING, _MessageCollection, _MessageCollectionCLIManager, APFactory, AsciiBannerManager, CLIManager
+from nwdocstringcheckingcli import CLISTRING, _MessageCollection, _MessageCollectionCLIManager, APFactory, AsciiBannerManager, CLIManager, CLIValidator
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -85,6 +85,35 @@ class AsciiBannerManagerTestCase(unittest.TestCase):
             self.assertIn("top_border", actual)
             self.assertIn("ascii_art", actual)
             self.assertIn("bottom_border", actual)
+class CLIValidatorTestCase(unittest.TestCase):
+
+    def test_validatefilepath_shouldreturnfilepath_whenvalidfilepath(self) -> None:
+
+        # Arrange
+        file_path : str = "valid_file.py"
+
+        # Act
+        with patch("nwdocstringchecking.Validator.validate_file_path") as validate_file_path:
+            validate_file_path.return_value = None
+            actual : str = CLIValidator().validate_file_path(file_path = file_path)
+
+        # Assert
+        self.assertEqual(file_path, actual)
+    def test_validatefilepath_shouldraiseexception_wheninvalidfilepath(self) -> None:
+
+        # Arrange
+        file_path : str = "invalid_file.py"
+        message : str = "The provided 'file_path' doesn't exist: 'invalid_file.py'."
+
+        # Act, Assert
+        with patch("nwdocstringchecking.Validator") as validator_class:
+            validator_instance = validator_class.return_value
+            validator_instance.validate_file_path.side_effect = Exception(message)
+            
+            with self.assertRaises(Exception) as context:
+                CLIValidator().validate_file_path(file_path = file_path)
+            
+            self.assertEqual(message, str(context.exception))
 class APFactoryTestCase(unittest.TestCase):
 
     def test_create_shouldreturnexpectedargumentparser_wheninvoked(self) -> None:
@@ -141,6 +170,21 @@ class CLIManagerTestCase(unittest.TestCase):
 
         # Assert
         logging_function.assert_called_once_with(expected)
+    def test_lognamespace_shouldlogallarguments_wheninvoked(self) -> None:
+
+        # Arrange
+        args : Namespace = Namespace(file_path = "test.py", exclude = ["test_"])
+        logging_function : MagicMock = MagicMock()
+        cli_manager : CLIManager = CLIManager(logging_function = logging_function)
+
+        # Act
+        cli_manager._CLIManager__log_namespace(args = args) # type: ignore
+
+        # Assert
+        self.assertEqual(logging_function.call_count, 3)
+        logging_function.assert_any_call("file_path: 'test.py'")
+        logging_function.assert_any_call("exclude: '['test_']'")
+        logging_function.assert_any_call("")
 
     def test_runandlog_shouldlogexceptionmessage_whenexceptionisraised(self):
 
@@ -219,7 +263,7 @@ class CLIManagerTestCase(unittest.TestCase):
             ap_factory.create.assert_called_once()
             argument_parser.parse_args.assert_called_once()
             log_namespace.assert_called_once_with(args)
-            docstring_checker.run.assert_called_once_with(file_path = file_path)
+            docstring_checker.run.assert_called_once_with(file_path = file_path, exclude = exclude)
             log_docstrings.assert_called_once_with(missing)
 
 # MAIN
