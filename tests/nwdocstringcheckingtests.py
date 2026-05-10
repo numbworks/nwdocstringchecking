@@ -45,6 +45,19 @@ class DocStringCheckerTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(expected, actual)
 
+    def test_getmissingdocstrings_shouldexcludemethods_whenexcludelistisprovided(self) -> None:
+
+        # Arrange
+        source : str = "class SomeClass:\n    def test_one(self):\n        pass\n    def other_method(self):\n        pass"
+        exclude : list[str] = ["test_"]
+        expected : list[str] = ["SomeClass.other_method"]
+
+        # Act
+        actual : list[str] = DocStringChecker()._DocStringChecker__get_missing_docstrings(source = source, exclude = exclude) # type: ignore
+
+        # Assert
+        self.assertEqual(expected, actual)
+
 # MAIN
 if __name__ == "__main__":
     result = unittest.main(argv=[''], verbosity=3, exit=False)
