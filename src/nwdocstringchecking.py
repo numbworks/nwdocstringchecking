@@ -8,7 +8,7 @@ Alias: nwds
 import ast
 import os
 from ast import Module
-from typing import Optional, cast
+from typing import cast
 
 # LOCAL MODULES
 # CONSTANTS
