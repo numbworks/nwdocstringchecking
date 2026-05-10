@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 # LOCAL MODULES
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
 from nwdocstringchecking import DocStringChecker
-from nwdocstringcheckingcli import CLISTRING, _MessageCollection, APFactory, AsciiBannerManager, CLIManager
+from nwdocstringcheckingcli import CLISTRING, _MessageCollection, _MessageCollectionCLIManager, APFactory, AsciiBannerManager, CLIManager
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -113,6 +113,34 @@ class APFactoryTestCase(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 argument_parser.parse_args(args_list)
 class CLIManagerTestCase(unittest.TestCase):                
+
+    def test_logdocstrings_shouldlogeachmethod_whenmissinglistisnotempty(self) -> None:
+
+        # Arrange
+        missing : list[str] = ["ClassA.method_one", "ClassB.method_two"]
+        logging_function : MagicMock = MagicMock()
+        cli_manager : CLIManager = CLIManager(logging_function = logging_function)
+
+        # Act
+        cli_manager._CLIManager__log_docstrings(missing = missing) # type: ignore
+
+        # Assert
+        self.assertEqual(logging_function.call_count, 2)
+        logging_function.assert_any_call("ClassA.method_one")
+        logging_function.assert_any_call("ClassB.method_two")
+    def test_logdocstrings_shouldlogsuccessmessage_whenmissinglistisempty(self) -> None:
+
+        # Arrange
+        missing : list[str] = []
+        expected : str = _MessageCollectionCLIManager.all_methods_have_docstrings()
+        logging_function : MagicMock = MagicMock()
+        cli_manager : CLIManager = CLIManager(logging_function = logging_function)
+
+        # Act
+        cli_manager._CLIManager__log_docstrings(missing = missing) # type: ignore
+
+        # Assert
+        logging_function.assert_called_once_with(expected)
 
     def test_runandlog_shouldlogexceptionmessage_whenexceptionisraised(self):
 
