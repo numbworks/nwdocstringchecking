@@ -1,4 +1,5 @@
 # GLOBAL MODULES
+from io import StringIO
 import unittest
 from argparse import ArgumentParser
 from unittest.mock import mock_open, patch
@@ -6,7 +7,7 @@ from unittest.mock import mock_open, patch
 # LOCAL MODULES
 import sys, os
 sys.path.append(os.path.dirname(__file__).replace('tests', 'src'))
-from nwdocstringcheckingcli import _MessageCollection, APFactory, AsciiBannerManager
+from nwdocstringcheckingcli import CLISTRING, _MessageCollection, APFactory, AsciiBannerManager
 
 # SUPPORT METHODS
 # TEST CLASSES
@@ -97,7 +98,17 @@ class APFactoryTestCase(unittest.TestCase):
 
         self.assertIn("--file_path", arguments)
         self.assertIn("--exclude", arguments)
+    def test_create_shouldraiseerror_whenrequiredruntimeargumentismissing(self):
 
+        # Arrange
+        args_list : list[str] = CLISTRING.OPTION_FILEPATH_FLAGS
+        argument_parser : ArgumentParser = APFactory().create()
+
+        # Act, Assert
+        with patch("sys.stderr", new_callable = StringIO):
+            with self.assertRaises(SystemExit):
+                argument_parser.parse_args(args_list)
+                
 # MAIN
 if __name__ == "__main__":
     result = unittest.main(argv=[''], verbosity=3, exit=False)
