@@ -51,7 +51,7 @@ class DocStringChecker():
             source = file.read()
 
         return source
-    def __get_missing_docstrings(self, source : str, exclude : Optional[list[str]]) -> list[str]:
+    def __get_missing_docstrings(self, source : str, exclude : list[str]) -> list[str]:
 
         '''Returns all the method names missing docstrings by excluding specified substrings.'''
 
@@ -65,13 +65,12 @@ class DocStringChecker():
                     if isinstance(item, ast.FunctionDef):
                         if ast.get_docstring(item) is None:
                             method_name = f"{node.name}.{item.name}"
-                            if exclude:
-                                if not any(substring in method_name for substring in exclude):
-                                    method_names.append(method_name)
+                            if not any(substring in method_name for substring in exclude):
+                                method_names.append(method_name)
 
         return method_names
 
-    def run(self, file_path : str, exclude : Optional[list[str]] = None) -> list[str]:
+    def run(self, file_path : str, exclude : list[str] = []) -> list[str]:
 
         '''Runs the docstring check.'''
 
