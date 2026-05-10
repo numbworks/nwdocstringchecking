@@ -16,10 +16,6 @@ class CLISTRING:
 
     '''Collects all the CLI-related strings.'''
 
-    COMMAND_DEST : Final[str] = "command"
-    COMMAND_REQUIRED : Final[bool] = True
-    COMMAND_ARGS : dict[str, Any] = { "dest": COMMAND_DEST, "required": COMMAND_REQUIRED }
-
     OPTION_FILEPATH_FLAGS : Final[list[str]] = ["--file_path"]
     OPTION_FILEPATH_DEST : Final[str] = "file_path"
     OPTION_FILEPATH_REQUIRED : Final[bool] = True
@@ -167,6 +163,12 @@ class CLIManager():
     def __log_ascii_banner(self) -> None:
         self.__logging_function(self.__ascii_banner_manager.create(PROJECT_VERSION))
     def __log_namespace(self, args : Namespace):
+
+        '''Logs the provided args.'''
+
+        for key, value in vars(args).items():
+            self.__logging_function(f"{key}: '{value}'")
+            
         self.__logging_function("")
     def __log_docstrings(self, missing: list[str]) -> None:
 
@@ -196,7 +198,8 @@ class CLIManager():
 
             self.__log_namespace(args)
 
-            missing : list[str] = self.__docstring_checker.run(file_path = args.file_path)
+            missing : list[str] = self.__docstring_checker.run(file_path = args.file_path, exclude = args.exclude)
+            
             self.__log_docstrings(missing)
             
         except (Exception, SystemExit) as e:
