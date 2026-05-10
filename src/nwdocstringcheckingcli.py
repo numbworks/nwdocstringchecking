@@ -107,9 +107,25 @@ class AsciiBannerManager:
         ])
 
         return ascii_banner
+class CLIValidator:
+
+    '''Handles CLI argument validation.'''
+
+    def validate_file_path(self, file_path: str) -> str:
+
+        '''Returns file_path or raises Exception.'''
+
+        Validator().validate_file_path(file_path)
+
+        return file_path
 class APFactory():
 
     '''Encapsulates all the logic related to the creation of a custom instance of argparse.ArgumentParser.'''
+
+    __cli_validator : CLIValidator
+
+    def __init__(self, cli_validator : CLIValidator = CLIValidator()) -> None:
+        self.__cli_validator = cli_validator
 
     def create(self) -> ArgumentParser:
 
@@ -128,7 +144,7 @@ class APFactory():
             dest = CLISTRING.OPTION_FILEPATH_DEST,
             required = CLISTRING.OPTION_FILEPATH_REQUIRED,
             help = CLISTRING.OPTION_FILEPATH_HELP,
-            type = Validator().validate_file_path)
+            type = self.__cli_validator.validate_file_path)
         
         argument_parser.add_argument(
             *CLISTRING.OPTION_EXCLUDE_FLAGS,
