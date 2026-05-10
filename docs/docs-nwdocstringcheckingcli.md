@@ -6,11 +6,11 @@ Contact: numbworks@gmail.com
 | Date | Author | Description |
 |---|---|---|
 | 2025-05-18 | numbworks | Created. |
-| 2026-05-10 | numbworks | Last updated. |
+| 2026-05-10 | numbworks | Last updated (2.0.0). |
 
 ## Introduction
 
-`nwdocstringcheckingcli` is a CLI application designed to identify which methods in a Python file are missing docstrings.
+`nwdocstringcheckingcli` is a command-line application built on the top of `nwdocstringchecking`.
 
 ## Overview
 
