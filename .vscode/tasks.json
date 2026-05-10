@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "nwdocstringchecking: all-concise",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/scripts/nwmakefiles && make -f makefile-nwdocstringchecking all-concise",
+            "problemMatcher": []
+        },
+        {
+            "label": "nwdocstringcheckingcli: all-concise",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/scripts/nwmakefiles && make -f makefile-nwdocstringcheckingcli all-concise",
+            "problemMatcher": []
+        },
+        {
+            "label": "nwdocstringchecking: coverage-verbose",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/scripts/nwmakefiles && make -f makefile-nwdocstringchecking coverage-verbose",
+            "problemMatcher": []
+        },
+        {
+            "label": "nwdocstringcheckingcli: coverage-verbose",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/scripts/nwmakefiles && make -f makefile-nwdocstringcheckingcli coverage-verbose",
+            "problemMatcher": []
+        },
+        {
+            "label": "nwdocstringchecking: update-codecoverage",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/scripts/nwmakefiles && make -f makefile-nwdocstringchecking update-codecoverage",
+            "problemMatcher": []
+        },
+        {
+            "label": "nwdocstringcheckingcli: update-codecoverage",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/scripts/nwmakefiles && make -f makefile-nwdocstringcheckingcli update-codecoverage",
+            "problemMatcher": []
+        }
+    ]
+}

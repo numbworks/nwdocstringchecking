@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Debug: nwdocstringcheckingcli",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/nwdocstringcheckingcli.py",
+            "console": "integratedTerminal",
+            "args": ["--file_path", "/workspaces/nwdocstringchecking/src/nwdocstringchecking.py"],
+            "justMyCode": true
+        }
+    ]
+}
