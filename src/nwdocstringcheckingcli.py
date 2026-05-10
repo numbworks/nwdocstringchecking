@@ -5,10 +5,10 @@ A CLI application built on the top of nwdocstringchecking.
 # GLOBAL MODULES
 import os
 from argparse import ArgumentParser, Namespace
-from typing import Any, Callable, Final, Optional, Tuple, cast
+from typing import Any, Callable, Final
 
 # LOCAL MODULES
-from nwdocstringchecking import Validator
+from nwdocstringchecking import DocStringChecker, Validator
 from setupinfo import CLI_NAME, CLI_DESCRIPTION, PROJECT_VERSION
 
 # CONSTANTS
@@ -40,8 +40,16 @@ class _MessageCollectionAsciiBannerManager():
     @staticmethod
     def provided_version_empty_whitespace() -> str:
         return "The provided 'version' is empty or whitespace."
+class _MessageCollectionCLIManager():
+
+    '''Collects all the messages used for logging and for the exceptions.'''
+    
+    @staticmethod
+    def all_methods_have_docstrings() -> str:
+        return "All methods have docstrings."
 class _MessageCollection(
-        _MessageCollectionAsciiBannerManager):
+        _MessageCollectionAsciiBannerManager,
+        _MessageCollectionCLIManager):
 
     '''Collects all the messages used for logging and for the exceptions.'''
 
@@ -129,31 +137,69 @@ class APFactory():
             action = CLISTRING.OPTION_EXCLUDE_ACTION)
 
         return argument_parser
-class APAdapter():
+class CLIManager():
 
-    '''Customizes argparse.ArgumentParser for this use case.'''
+    '''Collects all the logic related to the CLI management.'''
 
     __ap_factory : APFactory
+    __ascii_banner_manager : AsciiBannerManager
+    __docstring_checker : DocStringChecker
+    __logging_function : Callable[[str], None]
 
-    def __init__(self, ap_factory : APFactory = APFactory()) -> None:
+    def __init__(
+        self, 
+        ap_factory : APFactory = APFactory(), 
+        ascii_banner_manager : AsciiBannerManager = AsciiBannerManager(),
+        docstring_checker : DocStringChecker = DocStringChecker(),
+        logging_function : Callable[[str], None] = lambda msg : print(msg)) -> None:
+        
         self.__ap_factory = ap_factory
+        self.__ascii_banner_manager = ascii_banner_manager
+        self.__docstring_checker = docstring_checker
+        self.__logging_function = logging_function
 
-    def parse_args(self) -> Tuple[Optional[str], list[str]]:
+    def __log_ascii_banner(self) -> None:
+        self.__logging_function(self.__ascii_banner_manager.create(PROJECT_VERSION))
+    def __log_namespace(self, args : Namespace):
+        self.__logging_function("")
+    def __log_docstrings(self, missing: list[str]) -> None:
 
-        '''Parses provided arguments.'''
+        '''Prints missing docstrings.'''
+
+        if missing:
+            for method in missing:
+                self.__logging_function(method)
+        else:
+            self.__logging_function(_MessageCollection.all_methods_have_docstrings())
+
+    def run_and_log(self) -> None:
+
+        '''
+            Extract the missing docstrings and log them.
+            
+            The SystemExit exception occurs when a required option is not provided.
+            SystemExit doesn't inherit from Exception and has no message, therefore we need to handle it accordingly.            
+        '''
 
         try:
 
-            parser : ArgumentParser = self.__ap_factory.create()
-            args : Namespace = parser.parse_args()
+            self.__log_ascii_banner()
 
-            return (args.file_path, args.exclude)
+            argument_parser : ArgumentParser = self.__ap_factory.create()
+            args : Namespace = argument_parser.parse_args()
 
-        except:
-            return (None, [])
+            self.__log_namespace(args)
+
+            missing : list[str] = self.__docstring_checker.run(file_path = args.file_path)
+            self.__log_docstrings(missing)
+            
+        except (Exception, SystemExit) as e:
+            
+            if not isinstance(e, SystemExit):
+                self.__logging_function(str(e))
 
 # MAIN
-def main(): pass
+def main(): CLIManager().run_and_log()
 
 if __name__ == "__main__":
     main()
