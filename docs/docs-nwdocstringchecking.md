@@ -6,23 +6,23 @@ Contact: numbworks@gmail.com
 | Date | Author | Description |
 |---|---|---|
 | 2025-05-18 | numbworks | Created. |
-| 2026-05-10 | numbworks | Last updated. |
+| 2026-07-05 | numbworks | Last updated (v2.0.1). |
 
 ## Introduction
 
 `nwdocstringchecking` is a library designed to identify which methods in a Python file are missing docstrings.
-
-## See Also: `developmentguide`
-
-To get started with this project as a developer, please give a look to the following document:
-
-- [docs-developmentguide-python.md](SeeAlso-developmentguide/docs-developmentguide-python.md)
 
 ## See Also: `asciibannermanager`
 
 This project includes portions of the `asciibannermanager` project, which is documented here:
 
 - [docs-asciibannermanager.md](SeeAlso-asciibannermanager/docs-asciibannermanager.md)
+
+## See Also: `developerguide`
+
+To get started with this project as a developer, please give a look to the following document:
+
+- [docs-developerguide-python.md](SeeAlso-developerguide/docs-developerguide-python.md)
 
 ## See Also: `nwbuilders`
 
