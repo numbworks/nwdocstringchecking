@@ -6,7 +6,7 @@ Contact: numbworks@gmail.com
 | Date | Author | Description |
 |---|---|---|
 | 2025-05-18 | numbworks | Created. |
-| 2026-05-10 | numbworks | Last updated (2.0.0). |
+| 2026-07-05 | numbworks | Last updated (v2.0.1). |
 
 ## Introduction
 
@@ -42,7 +42,7 @@ root@e584fefc57f0:/# nwds --file_path src/nwdocstringchecking.py
  ##:. ###: ##: ##: ##: ##:::: ##:'##::: ##:
  ##::. ##:. ###. ###:: ########::. ######::
 ..::::..:::...::...:::........::::......:::
-************************Version: 2.0.0*****
+************************Version: 2.0.1*****
 
 file_path: 'src/nwdocstringchecking.py'
 exclude: '[]'
@@ -67,7 +67,7 @@ nwds --file_path src/nwdocstringchecking.py --exclude Message --exclude Somethin
  ##:. ###: ##: ##: ##: ##:::: ##:'##::: ##:
  ##::. ##:. ###. ###:: ########::. ######::
 ..::::..:::...::...:::........::::......:::
-************************Version: 2.0.0*****
+************************Version: 2.0.1*****
 
 file_path: 'src/nwdocstringchecking.py'
 exclude: '['Message', 'Something']'
